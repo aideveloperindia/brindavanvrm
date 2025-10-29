@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VRM App - Verification Recovery Marketing</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="LOGO.png">
+</head>
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-content">
+            <div class="header-left">
+                <img src="LOGO.png" alt="Brindavan Chits" class="logo">
+                <h1>VRM System</h1>
+            </div>
+            <div class="desktop-nav" id="desktopNav">
+                <button class="desktop-nav-item active" data-screen="dashboard">Dashboard</button>
+                <button class="desktop-nav-item" data-screen="assignments">Assignments</button>
+                <button class="desktop-nav-item" data-screen="reports">Reports</button>
+                <button class="desktop-nav-item" data-screen="hierarchy">Hierarchy</button>
+                <button class="desktop-nav-item" data-screen="settings">Settings</button>
+            </div>
+            <div class="user-section">
+                <button class="role-indicator" id="currentRole">MD</button>
+                <button class="logout-btn" onclick="app.logout()" title="Logout">🚪</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="app-main">
+        <div id="screenContainer">
+            <!-- Screens will be dynamically loaded here -->
+        </div>
+    </main>
+
+    <!-- Navigation Footer -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" data-screen="dashboard">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Dashboard</span>
+        </button>
+        <button class="nav-item" data-screen="assignments">
+            <span class="nav-icon">📋</span>
+            <span class="nav-label">Assignments</span>
+        </button>
+        <button class="nav-item" data-screen="reports">
+            <span class="nav-icon">📊</span>
+            <span class="nav-label">Reports</span>
+        </button>
+        <button class="nav-item" data-screen="hierarchy">
+            <span class="nav-icon">🏢</span>
+            <span class="nav-label">Hierarchy</span>
+        </button>
+        <button class="nav-item" data-screen="settings">
+            <span class="nav-icon">⚙️</span>
+            <span class="nav-label">Settings</span>
+        </button>
+    </nav>
+
+    <!-- Quick Actions Panel -->
+    <div class="quick-actions" id="quickActions">
+        <button class="quick-action-btn" data-action="call" title="Call Customer">📞</button>
+        <button class="quick-action-btn" data-action="navigate" title="Navigate to Location">🗺️</button>
+        <button class="quick-action-btn" data-action="capture" title="Start Visit">📷</button>
+        <button class="quick-action-btn" data-action="payment" title="Mark Payment">💰</button>
+        <button class="quick-action-btn" data-action="relieve" title="Request Relieve">🚪</button>
+    </div>
+
+    <!-- Notification Toast -->
+    <div class="notification-toast" id="notificationToast">
+        <div class="toast-content">
+            <span class="toast-icon">🔔</span>
+            <span class="toast-message"></span>
+        </div>
+        <button class="toast-close">×</button>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <p>Loading...</p>
+    </div>
+
+    <!-- Add Lead Modal -->
+    <div class="modal" id="addLeadModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add New Lead</h3>
+                <button class="modal-close" onclick="app.closeModal('addLeadModal')">×</button>
+            </div>
+            <form id="addLeadForm">
+                <div class="form-group">
+                    <label class="form-label">Customer Name</label>
+                    <input type="text" class="form-input" id="leadName" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Phone Number</label>
+                    <input type="tel" class="form-input" id="leadPhone" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" id="leadEmail">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Source</label>
+                    <select class="form-select" id="leadSource" required>
+                        <option value="">Select Source</option>
+                        <option value="referral">Referral</option>
+                        <option value="walk-in">Walk-in</option>
+                        <option value="online">Online</option>
+                        <option value="campaign">Campaign</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea class="form-textarea" id="leadNotes" placeholder="Additional notes..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="app.closeModal('addLeadModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Lead</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Mark Payment Modal -->
+    <div class="modal" id="markPaymentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Mark Payment</h3>
+                <button class="modal-close" onclick="app.closeModal('markPaymentModal')">×</button>
+            </div>
+            <form id="markPaymentForm">
+                <div class="form-group">
+                    <label class="form-label">Customer ID</label>
+                    <input type="text" class="form-input" id="paymentCustomerId" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Amount</label>
+                    <input type="number" class="form-input" id="paymentAmount" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Payment Mode</label>
+                    <select class="form-select" id="paymentMode" required>
+                        <option value="">Select Mode</option>
+                        <option value="cash">Cash</option>
+                        <option value="cheque">Cheque</option>
+                        <option value="upi">UPI</option>
+                        <option value="bank">Bank Transfer</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Reference Number</label>
+                    <input type="text" class="form-input" id="paymentRef" placeholder="Cheque/UPI reference">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea class="form-textarea" id="paymentNotes" placeholder="Payment notes..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="app.closeModal('markPaymentModal')">Cancel</button>
+                    <button type="submit" class="btn btn-success">Mark Payment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Assign Customer Modal -->
+    <div class="modal" id="assignCustomerModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Assign Customer</h3>
+                <button class="modal-close" onclick="app.closeModal('assignCustomerModal')">×</button>
+            </div>
+            <form id="assignCustomerForm">
+                <div class="form-group">
+                    <label class="form-label">Customer ID</label>
+                    <input type="text" class="form-input" id="assignCustomerId" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Assign to Executive</label>
+                    <select class="form-select" id="assignExecutive" required>
+                        <option value="">Select Executive</option>
+                        <option value="EXEC001">Rajesh Kumar</option>
+                        <option value="EXEC002">Priya Sharma</option>
+                        <option value="EXEC003">Amit Singh</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Priority</label>
+                    <select class="form-select" id="assignPriority" required>
+                        <option value="normal">Normal</option>
+                        <option value="high">High</option>
+                        <option value="urgent">Urgent</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Due Date</label>
+                    <input type="date" class="form-input" id="assignDueDate" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Instructions</label>
+                    <textarea class="form-textarea" id="assignInstructions" placeholder="Special instructions..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="app.closeModal('assignCustomerModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Assign Customer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="database.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
