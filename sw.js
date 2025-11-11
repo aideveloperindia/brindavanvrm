@@ -1,8 +1,9 @@
 // Service Worker for VRM App
-const CACHE_NAME = 'vrm-app-v1';
+const CACHE_NAME = 'vrm-app-v2';
 const urlsToCache = [
   '/',
   '/index.html',
+  '/quotations.html',
   '/styles.css',
   '/app.js',
   '/manifest.json',
